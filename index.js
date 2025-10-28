@@ -84,7 +84,24 @@ else {
 }
 });
 
+app.delete("/todos/:id", (req, res) => {
+  const { id } = req.params;
+  const index = TODO_ITEMS.findIndex((item) => item.id == id);
 
+  if (index === -1) {
+    res.json({
+      success: false,
+      message: "Todo item not found",
+    });
+  } 
+  else {
+    TODO_ITEMS.splice(index, 1);
+    res.json({
+      success: true,
+      message: "Todo item deleted successfully",
+    });
+  }
+});
 app.listen(8080, () => {
   console.log('✅ Server is running on port 8080');
 });
