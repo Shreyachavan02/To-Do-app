@@ -9,7 +9,7 @@ app.use(express.json());
 const TODO_ITEMS = [
   {
     id: 1,
-    task: 'Buy groceries',
+    todoItem: 'Buy groceries',
     priority: 'High',
     emoji: '🛒',
     isdone: false,
@@ -17,15 +17,15 @@ const TODO_ITEMS = [
   },
   {
     id: 2,
-    task: 'Attend guest',
-    priority: 'high',
+    todoItem: 'Attend guest',
+    priority: 'High',
     emoji: '🏠',
     isdone: false,
     createdAt: '2024-06-02T12:00:00Z',
   },
   {
     id: 3,
-    task: 'Finish project report',
+    todoItem: 'Finish project report',
     priority: 'Medium',
     emoji: '📄',
     isdone: false,
@@ -60,6 +60,30 @@ const todoObj= {
     message: "Todo item added successfully"
   });
 });
+
+
+app.get("/todos/search", (req, res) => {
+console.log(req.query);
+
+const { item, priority} = req.query;
+
+const filteredItems = TODO_ITEMS.filter((itemObj) => {
+if(itemObj.todoItem.toLowerCase().includes(item.toLowerCase()) && itemObj.priority == priority){
+  return true;
+}
+return false;
+
+});
+  res.json({
+    success: true,
+    data: filteredItems,
+    message: "Filtered todo items fetched successfully",
+  });
+
+  
+  });
+
+
 
 app.get("/todos/:id", (req, res) => {
   
@@ -102,6 +126,8 @@ app.delete("/todos/:id", (req, res) => {
     });
   }
 });
+
+
 app.listen(8080, () => {
   console.log('✅ Server is running on port 8080');
 });
