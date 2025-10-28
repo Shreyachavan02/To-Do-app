@@ -127,7 +127,57 @@ app.delete("/todos/:id", (req, res) => {
   }
 });
 
+app.patch("/todos/:id/status", (req, res) => {
+const { id } = req.params;
+const index = TODO_ITEMS.findIndex((item) => item.id == id);
+const { isDone } = req.body;
 
+if(index === -1){
+  res.json({
+    success: false,
+    message: "Todo item not found",
+  });
+}
+else {
+  TODO_ITEMS[index].isDone = isDone;
+  res.json({
+    success: true,
+    data: TODO_ITEMS[index],
+    message: "Todo item updated successfully",
+  });
+}
+});
+
+app.put("/todos/:id", (req, res) => {
+const { id } = req.params;
+
+const index = TODO_ITEMS.findIndex((item) => item.id == id);
+
+if(index == -1){
+  return res.json({
+    success: false,
+    message: "Todo item updated successfully",
+  });
+}
+const { todoItem, priority, emoji, isDone } = req.body;
+
+const newObj={
+  todoItem,
+  priority,
+  isDone,
+  emoji,
+  id: TODO_ITEMS[index].id,
+  createdAt: TODO_ITEMS[index].createdAt,
+
+};
+TODO_ITEMS[index] = newObj;
+res.json({
+  success: true,
+  data: newObj,
+  message: "Todo item updated successfully",
+});
+
+});
 app.listen(8080, () => {
   console.log('✅ Server is running on port 8080');
 });
