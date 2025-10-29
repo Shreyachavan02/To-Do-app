@@ -81,7 +81,10 @@ console.log(req.query);
 const { item, priority} = req.query;
 
 const filteredItems = TODO_ITEMS.filter((itemObj) => {
-if(itemObj.todoItem.toLowerCase().includes(item.toLowerCase()) && itemObj.priority == priority){
+if (
+  (itemObj.todoItem?.toLowerCase().includes(item?.toLowerCase() || "")) &&
+  itemObj.priority == priority
+){
   return true;
 }
 return false;
@@ -140,26 +143,28 @@ app.delete("/todos/:id", (req, res) => {
   }
 });
 
-app.patch("/todos/:id/status", (req, res) => {
-const { id } = req.params;
-const index = TODO_ITEMS.findIndex((item) => item.id == id);
-const { isDone } = req.body;
+aapp.patch("/todos/:id/status", (req, res) => {
+  const { id } = req.params;
+  const index = TODO_ITEMS.findIndex((item) => item.id == id);
+  const { isDone } = req.body;
 
-if(index === -1){
-  res.json({
-    success: false,
-    message: "Todo item not found",
-  });
-}
-else {
+  if (index === -1) {
+    return res.json({
+      success: false,
+      message: "Todo item not found",
+    });
+  }
+
+
   TODO_ITEMS[index].isDone = isDone;
+
   res.json({
     success: true,
     data: TODO_ITEMS[index],
     message: "Todo item updated successfully",
   });
-}
 });
+
 
 app.put("/todos/:id", (req, res) => {
 const { id } = req.params;
