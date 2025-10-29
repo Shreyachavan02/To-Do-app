@@ -143,7 +143,7 @@ app.delete("/todos/:id", (req, res) => {
   }
 });
 
-aapp.patch("/todos/:id/status", (req, res) => {
+app.patch("/todos/:id/status", (req, res) => {
   const { id } = req.params;
   const index = TODO_ITEMS.findIndex((item) => item.id == id);
   const { isDone } = req.body;
