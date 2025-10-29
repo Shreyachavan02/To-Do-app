@@ -36,6 +36,16 @@ const TODO_ITEMS = [
   },
 ];
 
+
+app.get("/health", (req, res) => {
+  res.json({
+    success: true,
+    message: "Server is healthy",
+  });
+});
+
+
+
 app.get('/todos', (req, res) => {
   res.json({
     success: true,
