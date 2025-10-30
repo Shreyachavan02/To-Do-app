@@ -1,9 +1,13 @@
-import express from 'express';
 
+
+import cors from 'cors'; 
+import express from 'express';
+import dotenv from 'dotenv';
+dotenv.config();
 const app = express();
 
 app.use(express.json());
-
+app.use(cors());
 
 
 const TODO_ITEMS = [
@@ -32,6 +36,17 @@ const TODO_ITEMS = [
     createdAt: '2024-06-03T15:30:00Z',
   },
 ];
+
+
+app.get("/health", (req, res) => {
+  res.json({
+    success: true,
+    message: "Server is healthy",
+  });
+});
+
+
+
 
 app.get('/todos', (req, res) => {
   res.json({
@@ -63,25 +78,23 @@ const todoObj= {
 
 
 app.get("/todos/search", (req, res) => {
-console.log(req.query);
+  const { item, priority } = req.query;
 
-const { item, priority} = req.query;
+  const filteredItems = TODO_ITEMS.filter((todo) => {
+    const matchesItem = item ? todo.todoItem.toLowerCase().includes(item.toLowerCase()) : true;
+    const matchesPriority = priority ? todo.priority === priority : true;
+    return matchesItem && matchesPriority;
+  });
 
-const filteredItems = TODO_ITEMS.filter((itemObj) => {
-if(itemObj.todoItem.toLowerCase().includes(item.toLowerCase()) && itemObj.priority == priority){
-  return true;
-}
-return false;
-
-});
   res.json({
     success: true,
     data: filteredItems,
     message: "Filtered todo items fetched successfully",
   });
+});
 
-  
-  });
+
+
 
 
 
@@ -178,6 +191,8 @@ res.json({
 });
 
 });
-app.listen(8080, () => {
-  console.log('✅ Server is running on port 8080');
+
+const PORT = process.env.PORT || 8080;
+app.listen( PORT, () => {
+  console.log(`✅ Server is running on port ${PORT}`);
 });
