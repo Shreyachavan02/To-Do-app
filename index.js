@@ -1,14 +1,8 @@
-
-
-import cors from 'cors'; 
 import express from 'express';
-import dotenv from 'dotenv';
-dotenv.config();
+
 const app = express();
 
 app.use(express.json());
-app.use(cors());
-
 
 const TODO_ITEMS = [
   {
@@ -37,16 +31,12 @@ const TODO_ITEMS = [
   },
 ];
 
-
 app.get("/health", (req, res) => {
   res.json({
     success: true,
     message: "Server is healthy",
   });
 });
-
-
-
 
 app.get('/todos', (req, res) => {
   res.json({
@@ -55,144 +45,75 @@ app.get('/todos', (req, res) => {
     message: 'To-Do items retrieved successfully',
   });
 });
-app.post("/todos", (req, res) => {
+
+app.post('/todos', (req, res) => {
   const { todoItem, priority, emoji } = req.body;
 
-const todoObj= {
-  id: TODO_ITEMS[TODO_ITEMS.length -1].id +1,
-  task: todoItem,
-  priority: priority,
-  emoji: emoji,
-  isdone: false,
-  createdAt: new Date().toISOString(),
-};
 
-  TODO_ITEMS.push(todoObj);
+  const todoObj = {
+    id: TODO_ITEMS[TODO_ITEMS.length - 1].id + 1,
+    todoItem: todoItem,
+    priority: priority,
+    emoji: emoji,
+    isdone: false,
+    createdAt: new Date().toISOString(),
+  };
+  TODO_ITEMS.push(todoItem);
+
 
   res.json({
     success: true,
-    data: todoObj,
-    message: "Todo item added successfully"
+    data: TODO_ITEMS,
+    message: 'To-Do item created successfully',
   });
 });
 
 
-app.get("/todos/search", (req, res) => {
-  const { item, priority } = req.query;
+app.get('/todos/:id', (req, res) => {
 
-  const filteredItems = TODO_ITEMS.filter((todo) => {
-    const matchesItem = item ? todo.todoItem.toLowerCase().includes(item.toLowerCase()) : true;
-    const matchesPriority = priority ? todo.priority === priority : true;
-    return matchesItem && matchesPriority;
-  });
-
-  res.json({
-    success: true,
-    data: filteredItems,
-    message: "Filtered todo items fetched successfully",
-  });
-});
-
-
-
-
-
-
-app.get("/todos/:id", (req, res) => {
-  
-const { id } = req.params; 
-
-const todoItem = TODO_ITEMS.find((item) => {
- if(item.id == id) return item;
-});
-if(todoItem){
-  res.json({
-    success: true,
-    data: todoItem,
-    message: "Todo item fetched successfully",
-  });
-}
-else {
-  res.json({
-    success: false,
-    data: null, 
-    message: "Todo item not found",
-});
-}
-});
-
-app.delete("/todos/:id", (req, res) => {
   const { id } = req.params;
+
+  const todoItem = TODO_ITEMS.find((item) => {
+    if (item.id == id) return item;
+  });
+  if (!todoItem) {
+    res.json({
+      success: true,
+      data: todoItem,
+      message: 'To-Do item fetched successfully',
+    });
+  }
+  else {
+    res.json({
+      success: false,
+      message: 'To-Do item not found',
+    });
+  }
+});
+
+app.delete('/todos/:id', (req, res) => {
+  const { id } = req.params;
+
   const index = TODO_ITEMS.findIndex((item) => item.id == id);
 
   if (index === -1) {
     res.json({
       success: false,
-      message: "Todo item not found",
+      message: 'To-Do item deleted successfully',
     });
-  } 
+  }
   else {
     TODO_ITEMS.splice(index, 1);
     res.json({
       success: true,
-      message: "Todo item deleted successfully",
+      message: 'To-Do item deleted successfully',
     });
   }
 });
 
-app.patch("/todos/:id/status", (req, res) => {
-const { id } = req.params;
-const index = TODO_ITEMS.findIndex((item) => item.id == id);
-const { isDone } = req.body;
 
-if(index === -1){
-  res.json({
-    success: false,
-    message: "Todo item not found",
-  });
-}
-else {
-  TODO_ITEMS[index].isDone = isDone;
-  res.json({
-    success: true,
-    data: TODO_ITEMS[index],
-    message: "Todo item updated successfully",
-  });
-}
-});
 
-app.put("/todos/:id", (req, res) => {
-const { id } = req.params;
 
-const index = TODO_ITEMS.findIndex((item) => item.id == id);
-
-if(index == -1){
-  return res.json({
-    success: false,
-    message: "Todo item updated successfully",
-  });
-}
-const { todoItem, priority, emoji, isDone } = req.body;
-
-const newObj={
-  todoItem,
-  priority,
-  isDone,
-  emoji,
-  id: TODO_ITEMS[index].id,
-  createdAt: TODO_ITEMS[index].createdAt,
-
-};
-TODO_ITEMS[index] = newObj;
-res.json({
-  success: true,
-  data: newObj,
-  message: "Todo item updated successfully",
-});
-
-});
-
-const PORT = process.env.PORT || 8080;
-app.listen( PORT, () => {
-  console.log(`✅ Server is running on port ${PORT}`);
+app.listen(8080, () => {
+  console.log('✅ Server is running on port 8080');
 });
